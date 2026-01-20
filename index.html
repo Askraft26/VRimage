@@ -1,45 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Photo Animée</title>
-  </head>
-  <body>
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; vr-mode-ui: false; device-orientation-permission-ui: false" 
-             embedded 
-             color-space="sRGB" 
-             renderer="colorManagement: true, physicallyCorrectLights">
-      
-      <!-- Préchargement de la vidéo -->
-      <a-assets>
-        <video id="video1" src="./video.mp4" preload="auto" playsinline webkit-playsinline muted></video>
-      </a-assets>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Photo Animée</title>
+  <!-- Librairies -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+  <a-scene 
+    mindar-image="imageTargetSrc: ./targets.mind; vr-mode-ui: false; device-orientation-permission-ui: false" 
+    embedded 
+    renderer="colorManagement: true, physicallyCorrectLights">
 
-      <!-- Caméra -->
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    <!-- Préchargement vidéo -->
+    <a-assets>
+      <video id="video1" src="./video.mp4" preload="auto" playsinline muted loop></video>
+    </a-assets>
 
-      <!-- Cible AR -->
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-video src="#video1" position="0 0 0" rotation="0 0 0" scale="1 0.56 1"></a-video>
-      </a-entity>
-    </a-scene>
+    <!-- Caméra AR -->
+    <a-camera look-controls="enabled: false"></a-camera>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const videoEl = document.querySelector("#video1");
-        const target = document.querySelector("[mindar-image-target]");
-        
-        target.addEventListener("targetFound", () => {
-          videoEl.play();
-        });
-        
-        target.addEventListener("targetLost", () => {
-          videoEl.pause();
-        });
-      });
-    </script>
-  </body>
+    <!-- Cible AR -->
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-video src="#video1" scale="1 0.56 1"></a-video>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const videoEl = document.getElementById("video1");
+      const target = document.querySelector("[mindar-image-target]");
+
+      target.addEventListener("targetFound", () => videoEl.play());
+      target.addEventListener("targetLost", () => videoEl.pause());
+    });
+  </script>
+</body>
 </html>
