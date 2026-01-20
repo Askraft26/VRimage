@@ -5,26 +5,43 @@
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scan Vidéo</title>
+    <title>AR Vidéo</title>
   </head>
   <body>
-    <!-- Scène AR avec MindAR -->
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; vr-mode-ui='enabled:false' device-orientation-permission-ui='enabled:false'">
+    <!-- Scène AR -->
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; vr-mode-ui='enabled:false' device-orientation-permission-ui='enabled:false'" 
+             embedded 
+             color-space="sRGB" 
+             renderer="colorManagement: true, physicallyCorrectLights">
       
-      <!-- Gestion des assets : vidéo -->
+      <!-- Assets : vidéo -->
       <a-assets>
-        <video id="video1" src="./video.mp4" autoplay loop muted playsinline></video>
+        <video id="video1" src="./video.mp4" preload="auto" playsinline webkit-playsinline muted></video>
       </a-assets>
 
-      <!-- Caméra AR -->
+      <!-- Caméra -->
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Cible AR : affiche la vidéo quand l’image est reconnue -->
+      <!-- Cible AR -->
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-video src="#video1" position="0 0 0" rotation="0 0 0" scale="1 1 1"></a-video>
+        <a-video src="#video1" position="0 0 0" rotation="0 0 0" scale="1 0.56 1"></a-video>
       </a-entity>
-      
     </a-scene>
+
+    <script>
+      // Script pour démarrer/arrêter la vidéo selon la détection
+      document.addEventListener("DOMContentLoaded", () => {
+        const videoEl = document.querySelector("#video1");
+        const target = document.querySelector("[mindar-image-target]");
+        
+        target.addEventListener("targetFound", () => {
+          videoEl.play();
+        });
+        
+        target.addEventListener("targetLost", () => {
+          videoEl.pause();
+        });
+      });
+    </script>
   </body>
 </html>
-
