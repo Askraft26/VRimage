@@ -10,25 +10,10 @@
 
   <style>
     body { margin: 0; overflow: hidden; }
-    #startBtn, #pauseBtn {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 12px 20px;
-      background: #1e88e5; color: #fff;
-      border: none; border-radius: 6px;
-      font-size: 16px; cursor: pointer;
-      z-index: 9999;
-    }
-    #startBtn { top: 50%; }
-    #pauseBtn { bottom: 20px; display: none; }
   </style>
 </head>
 
 <body>
-<button id="startBtn">▶️ Activer caméra & démarrer AR</button>
-<button id="pauseBtn">⏸ Pause</button>
-
 <!-- Scène AR.js -->
 <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
   <a-assets>
@@ -46,49 +31,5 @@
 
   <a-entity camera></a-entity>
 </a-scene>
-
-<script>
-  const video = document.querySelector('#video');
-  const startBtn = document.querySelector('#startBtn');
-  const pauseBtn = document.querySelector('#pauseBtn');
-
-  // Bouton démarrer avec autorisation caméra
-  startBtn.addEventListener('click', async () => {
-    try {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Votre navigateur ne supporte pas l'accès caméra.");
-        return;
-      }
-
-      // 🔹 Demande réelle d’autorisation caméra
-      await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-
-      // 🔹 Lecture vidéo avec son
-      video.muted = false;
-      await video.play();
-
-      startBtn.style.display = 'none';
-      pauseBtn.style.display = 'block';
-    } catch (err) {
-      console.warn('Impossible de lancer la caméra/vidéo :', err);
-      alert("Autorisation caméra refusée ou problème d'accès.");
-    }
-  });
-
-  // Bouton pause/reprendre
-  pauseBtn.addEventListener('click', async () => {
-    if (!video.paused) {
-      video.pause();
-      pauseBtn.textContent = '▶️ Reprendre';
-    } else {
-      try {
-        await video.play();
-        pauseBtn.textContent = '⏸ Pause';
-      } catch (err) {
-        console.warn('Impossible de reprendre la vidéo :', err);
-      }
-    }
-  });
-</script>
 </body>
 </html>
