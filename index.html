@@ -2,11 +2,14 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>AR.js – Vidéo optimisée avec marqueur</title>
+  <title>AR.js – OBJ avec marqueur HIRO</title>
 
   <!-- A-Frame + AR.js -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+  <!-- Composant OBJ Loader -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe-obj-loader-component@3.0.0/dist/aframe-obj-loader-component.min.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
@@ -16,14 +19,20 @@
 <body>
 <a-scene embedded arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;">
   <a-assets>
-    <!-- Vidéo -->
-    <video id="video" loop muted autoplay playsinline webkit-playsinline crossorigin="anonymous" src="video.mp4"></video>
+    <!-- Ton modèle OBJ -->
+    <a-asset-item id="myObj" src="modele.obj"></a-asset-item>
+    <!-- Optionnel : texture pour l’OBJ -->
+    <a-asset-item id="myMtl" src="modele.mtl"></a-asset-item>
   </a-assets>
 
-  <!-- Marqueur basé sur A.patt -->
-  <a-marker type="pattern" url="A.patt" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
-    <!-- Vidéo affichée quand le marqueur est reconnu -->
-    <a-video src="#video" width="1.5" height="0.9" position="0 0 0" rotation="-90 0 0"></a-video>
+  <!-- Marqueur HIRO -->
+  <a-marker preset="hiro" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
+    <!-- Objet 3D affiché quand HIRO est reconnu -->
+    <a-entity obj-model="obj: #myObj; mtl: #myMtl" 
+              scale="0.5 0.5 0.5" 
+              position="0 0 0" 
+              rotation="0 0 0">
+    </a-entity>
   </a-marker>
 
   <a-entity camera></a-entity>
