@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AR Direct</title>
+  <title>AR Direct - Autorisation Caméra</title>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
   <style>
     body { margin: 0; height: 100vh; background: black; color: white; font-family: sans-serif; }
     #start-btn { 
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-      padding: 20px; font-size: 20px; background: #007bff; border: none; 
-      color: white; cursor: pointer; z-index: 10; 
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      padding: 20px; font-size: 20px; background: #007bff; border: none;
+      color: white; cursor: pointer; z-index: 10;
     }
     #vid { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
   </style>
 </head>
 <body>
-  <button id="start-btn">Démarrer AR et Accéder à la Caméra</button>
+  <button id="start-btn">Activer Caméra & Scanner AR</button>
   <video id="vid" src="video.mp4" loop muted playsinline></video>
 
   <script>
@@ -27,22 +27,33 @@
 
     const startAR = async () => {
       try {
-        // 🔹 Demande explicite de permission caméra
-        await navigator.mediaDevices.getUserMedia({ video: true });
+        // 🔹 Étape 1 : Vérifie compatibilité
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          alert("Votre navigateur ne supporte pas l'accès caméra.");
+          return;
+        }
 
-        // 🔹 Démarre MindAR après autorisation
+        // 🔹 Étape 2 : Demande réelle d’autorisation caméra
+        await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+
+        // 🔹 Étape 3 : Démarrage du scanner MindAR
         await mindar.start();
-        startBtn.style.display = 'none';
-        vid.style.display = 'block';
-        vid.play().catch(e => console.warn('Lecture vidéo bloquée :', e));
-        console.log('AR démarré !');
+
+        // 🔹 Optimisation iOS/Safari
+        vid.setAttribute("playsinline", true);
+        vid.play().catch(e => console.warn("Lecture vidéo bloquée :", e));
+
+        // Interface
+        startBtn.style.display = "none";
+        vid.style.display = "block";
+        console.log("Caméra et scanner AR activés !");
       } catch (error) {
-        console.error('Erreur AR :', error);
-        alert('Impossible d’accéder à la caméra. Vérifiez les permissions dans les paramètres du navigateur.');
+        console.error("Erreur AR :", error);
+        alert("Impossible d’activer la caméra. Vérifiez les permissions dans votre navigateur.");
       }
     };
 
-    // Synchronisation avec les cibles
+    // 🔹 Synchronisation avec les cibles scannées
     mindar.addEventListener('targetFound', () => {
       if (vid.paused) vid.play();
     });
@@ -52,6 +63,7 @@
       vid.currentTime = 0;
     });
 
+    // 🔹 Lancement au clic
     startBtn.addEventListener('click', startAR);
   </script>
 </body>
