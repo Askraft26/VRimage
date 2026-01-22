@@ -34,15 +34,16 @@
 
     <!-- OBJ affiché sur le marqueur -->
     <a-entity obj-model="obj: #cottageObj; mtl: #cottageMtl"
-              scale="0.1 0.1 0.1"
-              position="0 0 0"
-              rotation="-90 0 0">
-    </a-entity>
-
+          scale="0.09 0.09 0.09"
+          position="0 0 0"
+          rotation="-90 0 0"
+          animation="property: rotation; to: -90 360 0; loop: true; dur: 5000; easing: linear">
+</a-entity>
   </a-marker>
 
   <a-entity camera></a-entity>
 </a-scene>
 </body>
 </html>
+
 
