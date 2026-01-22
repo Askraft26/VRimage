@@ -1,40 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>AR Photo Animée</title>
-  <!-- Librairies -->
-  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-</head>
-<body>
-  <a-scene 
-    mindar-image="imageTargetSrc: ./targets.mind; vr-mode-ui: false; device-orientation-permission-ui: false" 
-    embedded 
-    renderer="colorManagement: true, physicallyCorrectLights">
 
-    <!-- Préchargement vidéo -->
-    <a-assets>
-      <video id="video1" src="./video.mp4" preload="auto" playsinline muted loop></video>
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+
+  <!-- MindAR -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+  </style>
+</head>
+
+<body>
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind;"
+    embedded
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    renderer="colorManagement: true; physicallyCorrectLights: true; precision: mediump"
+  >
+
+    <!-- Assets -->
+    <a-assets timeout="10000">
+      <video
+        id="video1"
+        src="./video.mp4"
+        preload="auto"
+        playsinline
+        webkit-playsinline
+        muted
+        loop
+        crossorigin="anonymous"
+      ></video>
     </a-assets>
 
-    <!-- Caméra AR -->
-    <a-camera look-controls="enabled: false"></a-camera>
+    <!-- Caméra -->
+    <a-camera
+      position="0 0 0"
+      look-controls="enabled: false"
+      cursor="rayOrigin: mouse"
+    ></a-camera>
 
-    <!-- Cible AR -->
+    <!-- Image cible -->
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-video src="#video1" scale="1 0.56 1"></a-video>
+
+      <!-- Vidéo AR -->
+      <a-video
+        src="#video1"
+        position="0 0 0"
+        scale="1 0.56 1"
+        material="shader: flat; transparent: true"
+      ></a-video>
+
     </a-entity>
   </a-scene>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const videoEl = document.getElementById("video1");
+      const video = document.getElementById("video1");
       const target = document.querySelector("[mindar-image-target]");
 
-      target.addEventListener("targetFound", () => videoEl.play());
-      target.addEventListener("targetLost", () => videoEl.pause());
+      // Sécurité iOS : forcer le chargement
+      video.pause();
+
+      target.addEventListener("targetFound", () => {
+        if (video.paused) {
+          video.play().catch(() => {
+            console.warn("Lecture vidéo bloquée par le navigateur");
+          });
+        }
+      });
+
+      target.addEventListener("targetLost", () => {
+        video.pause();
+        video.currentTime = 0; // reset propre
+      });
     });
   </script>
 </body>
