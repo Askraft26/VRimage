@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>AR.js – Vidéo + PNG avec marqueur</title>
+  <title>AR.js – Vidéo avec marqueur</title>
 
   <!-- A-Frame + AR.js -->
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -19,14 +19,12 @@
   <a-assets>
     <!-- Vidéo -->
     <video id="video" loop muted autoplay playsinline webkit-playsinline crossorigin="anonymous" src="video.mp4"></video>
-    <!-- PNG -->
-    <img id="patternimg" src="patternimg.png">
   </a-assets>
 
-  <!-- Marqueur basé sur patternimg.patt -->
-  <a-marker type="pattern" url="patternimg.patt">
+  <!-- Marqueur basé sur A.patt -->
+  <a-marker type="pattern" url="A.patt">
+    <!-- Vidéo affichée quand le marqueur est reconnu -->
     <a-video src="#video" width="1" height="0.6" position="0 0 0"></a-video>
-    <a-image src="#patternimg" width="1" height="0.6" position="0 0.8 0.01"></a-image>
   </a-marker>
 
   <a-entity camera></a-entity>
