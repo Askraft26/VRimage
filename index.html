@@ -8,7 +8,7 @@
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
 
-  <!-- Composant OBJ Loader -->
+  <!-- OBJ Loader -->
   <script src="https://cdn.jsdelivr.net/npm/aframe-obj-loader-component@3.0.0/dist/aframe-obj-loader-component.min.js"></script>
 
   <style>
@@ -18,6 +18,7 @@
 
 <body>
 <a-scene embedded arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;">
+  
   <a-assets>
     <!-- Ton modèle OBJ + MTL -->
     <a-asset-item id="cottageObj" src="cottage_obj.obj"></a-asset-item>
@@ -25,13 +26,19 @@
   </a-assets>
 
   <!-- Marqueur HIRO -->
-  <a-marker preset="hiro" smooth="true" smoothCount="10" smoothTolerance="0.01" smoothThreshold="5">
-    <!-- Objet 3D affiché quand HIRO est reconnu -->
+  <a-marker preset="hiro"
+            smooth="true"
+            smoothCount="10"
+            smoothTolerance="0.01"
+            smoothThreshold="5">
+
+    <!-- OBJ affiché sur le marqueur -->
     <a-entity obj-model="obj: #cottageObj; mtl: #cottageMtl"
-              scale="0.2 0.2 0.2"
+              scale="0.4 0.4 0.4"
               position="0 0 0"
-              rotation="0 0 0">
+              rotation="-90 0 0">
     </a-entity>
+
   </a-marker>
 
   <a-entity camera></a-entity>
