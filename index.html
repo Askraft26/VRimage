@@ -5,8 +5,8 @@
   <title>MindAR – Vidéo + PNG avec autorisation caméra</title>
 
   <!-- MindAR + A-Frame -->
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 
   <style>
     body { margin: 0; overflow: hidden; }
@@ -26,16 +26,21 @@
 </head>
 
 <body>
-<button id="startBtn">▶️ Activer caméra & démarrer la vidéo</button>
+<button id="startBtn">▶️ Activer caméra & démarrer AR</button>
 <button id="pauseBtn">⏸ Pause</button>
 
 <!-- Scène MindAR -->
-<a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: false;" embedded color-space="sRGB" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+<a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: false;" 
+         embedded color-space="sRGB" 
+         vr-mode-ui="enabled: false" 
+         device-orientation-permission-ui="enabled: false">
   <a-assets>
+    <!-- Vidéo -->
     <video id="video" loop playsinline webkit-playsinline crossorigin="anonymous">
       <source src="V.mp4" type="video/mp4">
       <source src="V.webm" type="video/webm">
     </video>
+    <!-- PNG -->
     <img id="fireworks" src="fireworks.png">
   </a-assets>
 
@@ -62,18 +67,20 @@
         return;
       }
 
+      // 🔹 Demande réelle d’autorisation caméra
       await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
 
-      // Démarre MindAR
+      // 🔹 Démarre MindAR
       sceneEl.components['mindar-image'].start();
 
+      // 🔹 Lecture vidéo avec son
       video.muted = false;
       await video.play();
 
       startBtn.style.display = 'none';
       pauseBtn.style.display = 'block';
     } catch (err) {
-      console.warn('Impossible de lancer la vidéo :', err);
+      console.warn('Impossible de lancer la caméra/vidéo :', err);
       alert("Autorisation caméra refusée ou problème d'accès.");
     }
   });
