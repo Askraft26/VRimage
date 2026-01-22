@@ -7,7 +7,11 @@
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js"></script>
   <style>
     body { margin: 0; height: 100vh; background: black; color: white; font-family: sans-serif; }
-    #start-btn { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; font-size: 20px; background: #007bff; border: none; color: white; cursor: pointer; z-index: 10; }
+    #start-btn { 
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+      padding: 20px; font-size: 20px; background: #007bff; border: none; 
+      color: white; cursor: pointer; z-index: 10; 
+    }
     #vid { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
   </style>
 </head>
@@ -23,28 +27,31 @@
 
     const startAR = async () => {
       try {
-        await mindar.start();  // Ça déclenche la demande de permission caméra
-        startBtn.style.display = 'none';  // Cache le bouton
+        // 🔹 Demande explicite de permission caméra
+        await navigator.mediaDevices.getUserMedia({ video: true });
+
+        // 🔹 Démarre MindAR après autorisation
+        await mindar.start();
+        startBtn.style.display = 'none';
         vid.style.display = 'block';
         vid.play().catch(e => console.warn('Lecture vidéo bloquée :', e));
         console.log('AR démarré !');
       } catch (error) {
         console.error('Erreur AR :', error);
-        alert('Impossible de démarrer la caméra. Vérifiez les permissions dans les paramètres du navigateur.');
+        alert('Impossible d’accéder à la caméra. Vérifiez les permissions dans les paramètres du navigateur.');
       }
     };
 
-    // Événement targetFound pour synchroniser
+    // Synchronisation avec les cibles
     mindar.addEventListener('targetFound', () => {
       if (vid.paused) vid.play();
     });
 
     mindar.addEventListener('targetLost', () => {
       vid.pause();
-      vid.currentTime = 0;  // Rewind optionnel
+      vid.currentTime = 0;
     });
 
-    // Lance sur clic du bouton
     startBtn.addEventListener('click', startAR);
   </script>
 </body>
