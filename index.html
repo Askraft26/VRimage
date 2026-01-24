@@ -1,57 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Introduction</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AR.js Video NFT</title>
+    
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.3.0/dist/aframe-master.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+
     <style>
-        video {
-            width: 100%;
-            height: 100vh;
-            object-fit: cover;
+        .arjs-loader {
+            height: 100%; width: 100%; position: absolute; top: 0; left: 0;
+            background-color: rgba(0, 0, 0, 0.8); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
         }
-        #arButton {
-            position: absolute;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 30px;
-            font-size: 18px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            display: none;
-        }
+        .arjs-loader div { color: white; font-family: sans-serif; text-align: center; }
     </style>
 </head>
-<body>
-    <video id="introVideo" autoplay muted>
-        <source src="IMG.MP4" type="video/mp4">
-        Votre navigateur ne supporte pas la vidéo.
-    </video>
-    
-    <button id="arButton" onclick="startAR()">
-        Lancer la Réalité Augmentée
-    </button>
-    
+
+<body style="margin: 0px; overflow: hidden;">
+    <div class="arjs-loader">
+        <div>Chargement de la vidéo et du suivi d'image...</div>
+    </div>
+
+    <a-scene
+        vr-mode-ui="enabled: false;"
+        renderer="antialias: true; precision: medium;"
+        embedded
+        arjs="trackingMethod: nft; sourceType: webcam; debugUIEnabled: false;">
+
+        <a-assets>
+            <video id="vid" src="./IMG.MP4" preload="auto" response-type="arraybuffer" loop crossorigin="anonymous" webkit-playsinline playsinline muted></video>
+        </a-assets>
+
+        <a-nft
+            type="nft"
+            url="./img1" 
+            smooth="true"
+            smoothCount="10"
+            smoothTolerance=".01"
+            smoothThreshold="5">
+            
+            <a-video
+                src="#vid"
+                width="160"
+                height="90"
+                position="80 0 -80"
+                rotation="-90 0 0">
+            </a-video>
+        </a-nft>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
     <script>
-        const video = document.getElementById('introVideo');
-        const arButton = document.getElementById('arButton');
-        
-        // Quand la vidéo se termine
-        video.addEventListener('ended', function() {
-            arButton.style.display = 'block';
+        // Gestion de la lecture vidéo au moment où l'image est détectée
+        window.addEventListener('nft-found', function() {
+            document.querySelector('.arjs-loader').style.display = 'none';
+            document.querySelector('#vid').play();
         });
-        
-        // Option pour passer la vidéo
-        video.addEventListener('click', function() {
-            video.pause();
-            arButton.style.display = 'block';
+
+        // Mise en pause si on perd l'image (optionnel)
+        window.addEventListener('nft-lost', function() {
+            document.querySelector('#vid').pause();
         });
-        
-        function startAR() {
-            // Rediriger vers la page AR
-            window.location.href = 'ar.html';
-        }
     </script>
 </body>
 </html>
