@@ -14,22 +14,35 @@
             height: 100%; width: 100%; position: absolute; top: 0; left: 0;
             background-color: #121212; z-index: 9999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; box-sizing: border-box; /* Pour gérer les petits écrans */
         }
 
         /* Spinner animé */
         .spinner {
-            width: 50px; height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
+            width: 40px; height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%; border-top-color: #42a5f5;
             animation: spin 1s ease-in-out infinite;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .arjs-loader div {
+        /* Texte du loader */
+        .loader-text {
             color: white; font-family: 'Segoe UI', sans-serif;
-            font-size: 16px; text-transform: uppercase; letter-spacing: 2px;
+            font-size: 14px; text-transform: uppercase; letter-spacing: 1.5px;
+            margin-bottom: 20px; text-align: center;
+        }
+
+        /* Style de l'image d'aide */
+        .helper-image {
+            max-width: 150px; /* Taille max de la miniature */
+            max-height: 150px;
+            width: auto; height: auto;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -38,7 +51,8 @@
 
     <div class="arjs-loader" id="loader">
         <div class="spinner"></div>
-        <div>Analyse du marqueur...</div>
+        <div class="loader-text">Scannez cette image :</div>
+        <img src="img1.png" class="helper-image" alt="Image cible à scanner">
     </div>
 
     <a-scene
@@ -65,7 +79,7 @@
             <a-video
                 id="video-entity"
                 src="#maVideo"
-                width="160"
+                width="160" /* Ajustez si nécessaire selon la taille réelle de votre image */
                 height="240"
                 position="80 0 -80"
                 rotation="-90 0 0">
@@ -79,24 +93,18 @@
         const video = document.querySelector('#maVideo');
         const loader = document.querySelector('#loader');
 
-        // Gestion du démarrage de la vidéo (Mobile Friendly)
         window.addEventListener('nft-found', () => {
-            loader.style.display = 'none'; // Cache le chargement
-            
-            // Tentative de lecture forcée pour mobile
+            loader.style.display = 'none';
             video.play().catch(e => {
-                console.log("Lecture bloquée, interaction requise.");
-                // Si bloqué, on attend un clic pour lancer
+                console.log("Lecture automatique bloquée. En attente d'interaction.");
                 document.body.addEventListener('click', () => { video.play(); }, { once: true });
             });
         });
 
-        // Optimisation batterie : Pause si on perd l'image
         window.addEventListener('nft-lost', () => {
             video.pause();
         });
 
-        // Redimensionnement automatique pour mobile
         window.addEventListener('resize', () => {
             const scene = document.querySelector('a-scene');
             scene.resize();
