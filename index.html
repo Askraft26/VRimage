@@ -1,240 +1,57 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>Réalité Augmentée - AR.js NFT</title>
-    
-    <!-- AFrame and AR.js from CDN -->
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
-    
+    <title>Introduction</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
-        
-        .arjs-loader {
-            position: absolute;
-            top: 0;
-            left: 0;
+        video {
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 9999;
-            color: white;
-            text-align: center;
-            padding: 20px;
+            height: 100vh;
+            object-fit: cover;
         }
-        
-        .arjs-loader.hidden {
-            display: none;
-        }
-        
-        .loader-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 2s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .instructions {
+        #arButton {
             position: absolute;
-            bottom: 30px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 10px;
-            font-size: 16px;
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-        
-        .instructions.found {
-            background: rgba(76, 175, 80, 0.8);
-        }
-        
-        .error-message {
-            position: absolute;
-            top: 50%;
+            bottom: 50px;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(231, 76, 60, 0.9);
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #4CAF50;
             color: white;
-            padding: 30px;
+            border: none;
             border-radius: 10px;
-            text-align: center;
-            max-width: 80%;
             display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="arjs-loader" id="loader">
-        <div class="loader-spinner"></div>
-        <h2>Initialisation de la réalité augmentée</h2>
-        <p>Veuillez autoriser l'accès à votre caméra lorsque demandé.</p>
-        <p>Le chargement peut prendre quelques secondes...</p>
-    </div>
+    <video id="introVideo" autoplay muted>
+        <source src="IMG.MP4" type="video/mp4">
+        Votre navigateur ne supporte pas la vidéo.
+    </video>
     
-    <!-- Instructions -->
-    <div class="instructions" id="instructions">
-        Pointez votre caméra vers l'image cible
-    </div>
-    
-    <!-- Error Message (hidden by default) -->
-    <div class="error-message" id="errorMessage">
-        <h3>❌ Erreur</h3>
-        <p id="errorText"></p>
-        <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: white; border: none; border-radius: 5px; cursor: pointer;">
-            Réessayer
-        </button>
-    </div>
-    
-    <!-- AR Scene -->
-    <a-scene 
-        vr-mode-ui="enabled: false"
-        renderer="antialias: true; alpha: true; precision: medium;"
-        embedded 
-        arjs="sourceType: webcam; detectionMode: mono; trackingMethod: nft; debugUIEnabled: false;"
-    >
-        
-        <!-- NFT Image Tracking -->
-        <a-nft 
-            type="nft" 
-            url="img1"
-            smooth="true"
-            smoothCount="10"
-            smoothTolerance="0.01"
-            smoothThreshold="5"
-        >
-            <!-- 3D Objects to display when image is detected -->
-            <a-box 
-                position="0 0.5 0" 
-                rotation="0 45 0" 
-                width="0.5" 
-                height="0.5" 
-                depth="0.5" 
-                color="#FF5733"
-                animation="property: rotation; to: 0 405 0; loop: true; dur: 2000"
-            ></a-box>
-            
-            <a-text 
-                value="AR.js NFT Demo" 
-                position="0 1.2 0" 
-                align="center" 
-                color="#FFF" 
-                width="5"
-            ></a-text>
-            
-            <a-ring 
-                position="0 0 0" 
-                radius-inner="0.3" 
-                radius-outer="0.4" 
-                color="#3498db" 
-                rotation="-90 0 0"
-            ></a-ring>
-        </a-nft>
-        
-        <!-- Camera -->
-        <a-entity camera></a-entity>
-    </a-scene>
+    <button id="arButton" onclick="startAR()">
+        Lancer la Réalité Augmentée
+    </button>
     
     <script>
-        // DOM Elements
-        const loader = document.getElementById('loader');
-        const instructions = document.getElementById('instructions');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
+        const video = document.getElementById('introVideo');
+        const arButton = document.getElementById('arButton');
         
-        // Hide loader when scene is loaded
-        document.querySelector('a-scene').addEventListener('loaded', function() {
-            console.log('Scene loaded successfully');
-            setTimeout(function() {
-                loader.classList.add('hidden');
-            }, 1500);
+        // Quand la vidéo se termine
+        video.addEventListener('ended', function() {
+            arButton.style.display = 'block';
         });
         
-        // Handle marker found
-        document.querySelector('a-scene').addEventListener('markerFound', function(e) {
-            console.log('Marker found!');
-            instructions.textContent = "Image détectée !";
-            instructions.classList.add('found');
+        // Option pour passer la vidéo
+        video.addEventListener('click', function() {
+            video.pause();
+            arButton.style.display = 'block';
         });
         
-        // Handle marker lost
-        document.querySelector('a-scene').addEventListener('markerLost', function(e) {
-            console.log('Marker lost');
-            instructions.textContent = "Pointez vers l'image cible";
-            instructions.classList.remove('found');
-        });
-        
-        // Handle errors
-        window.addEventListener('arjs-video-loaded', function(ev) {
-            console.log('AR.js video loaded');
-        });
-        
-        window.addEventListener('error', function(e) {
-            console.error('Global error:', e.error);
-            
-            // Check for specific AR.js errors
-            if (e.error && e.error.message && e.error.message.includes('NFT')) {
-                showError("Erreur de chargement des descripteurs NFT. Vérifiez que les fichiers .fset, .fset3, .iset sont présents.");
-            } else if (e.error && e.error.message && e.error.message.includes('camera')) {
-                showError("Erreur d'accès à la caméra. Veuillez autoriser l'accès et rafraîchir.");
-            }
-        });
-        
-        // Check camera permission
-        function checkCameraPermission() {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function(stream) {
-                        console.log('Camera access granted');
-                        // Stop the stream immediately as AR.js will handle it
-                        stream.getTracks().forEach(track => track.stop());
-                    })
-                    .catch(function(err) {
-                        console.error('Camera error:', err);
-                        showError("Accès à la caméra refusé. Veuillez autoriser la caméra et rafraîchir la page.");
-                    });
-            } else {
-                showError("Votre navigateur ne supporte pas l'accès à la caméra.");
-            }
+        function startAR() {
+            // Rediriger vers la page AR
+            window.location.href = 'ar.html';
         }
-        
-        // Show error message
-        function showError(message) {
-            errorText.textContent = message;
-            errorMessage.style.display = 'block';
-            loader.classList.add('hidden');
-        }
-        
-        // Initialize camera check
-        setTimeout(checkCameraPermission, 1000);
-        
-        // Auto-hide loader after 8 seconds max (fallback)
-        setTimeout(function() {
-            loader.classList.add('hidden');
-        }, 8000);
     </script>
 </body>
 </html>
