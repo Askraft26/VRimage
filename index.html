@@ -41,12 +41,6 @@
 
 <body style="margin:0; overflow:hidden;">
 
-  <div class="arjs-loader" id="loader">
-    <div class="spinner"></div>
-    <div class="loader-text">Scannez cette image :</div>
-    <img src="img1.png" class="helper-image" alt="Image cible à scanner">
-  </div>
-
   <a-scene
     vr-mode-ui="enabled: false;"
     renderer="antialias: true; precision: medium; logarithmicDepthBuffer: true; colorManagement: true;"
@@ -54,7 +48,7 @@
     arjs="trackingMethod: nft; sourceType: webcam; debugUIEnabled: false;">
 
     <a-assets>
-      <video id="maVideo" src="IMG.mp4" preload="auto" loop crossorigin="anonymous" playsinline muted></video>
+      <video id="maVideo" src="IMG.MP4" preload="auto" loop crossorigin="anonymous" playsinline muted></video>
     </a-assets>
 
     <a-nft
