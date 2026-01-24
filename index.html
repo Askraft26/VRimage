@@ -1,51 +1,155 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <title>AR.js – Cottage OBJ avec HIRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réalité Augmentée - Suivi d'Image</title>
+    
+    <!-- import aframe and then ar.js with image tracking / location based features -->
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1c2407b26c61958baa93967b5412487cd94b290b/dist/aframe-master.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
 
-  <!-- A-Frame + AR.js -->
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+    <!-- style for the loader -->
+    <style>
+        .arjs-loader {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-  <!-- OBJ Loader -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe-obj-loader-component@3.0.0/dist/aframe-obj-loader-component.min.js"></script>
-
-  <style>
-    body { margin: 0; overflow: hidden; }
-  </style>
+        .arjs-loader div {
+            text-align: center;
+            font-size: 1.25em;
+            color: white;
+        }
+        
+        /* Masquer le loader quand la scène est chargée */
+        .arjs-loader.hidden {
+            display: none;
+        }
+        
+        /* Instructions pour l'utilisateur */
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            z-index: 1000;
+        }
+    </style>
 </head>
 
-<body>
-<a-scene embedded arjs="sourceType: webcam; trackingMethod: best; debugUIEnabled: false;">
-  
-  <a-assets>
-    <!-- Ton modèle OBJ + MTL -->
-    <a-asset-item id="cottageObj" src="cottage_obj.obj"></a-asset-item>
-    <a-asset-item id="cottageMtl" src="cottage_obj.mtl"></a-asset-item>
-  </a-assets>
+<body style="margin : 0px; overflow: hidden;">
+    <!-- minimal loader shown until image descriptors are loaded. Loading may take a while according to the device computational power -->
+    <div class="arjs-loader" id="loader">
+        <div>
+            <h2>Chargement de l'expérience AR...</h2>
+            <p>Veuillez patienter pendant l'initialisation.</p>
+            <p>Assurez-vous d'autoriser l'accès à la caméra.</p>
+        </div>
+    </div>
 
-  <!-- Marqueur HIRO -->
-  <a-marker preset="hiro"
+    <!-- Instructions pour l'utilisateur -->
+    <div class="instructions" id="instructions">
+        Pointez votre caméra vers l'image cible
+    </div>
+
+    <!-- a-frame scene -->
+    <a-scene
+        vr-mode-ui="enabled: false;"
+        renderer="logarithmicDepthBuffer: true;"
+        embedded
+        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+        id="arScene"
+    >
+        <!-- a-nft is the anchor that defines an Image Tracking entity -->
+        <!-- on 'url' use the path to the Image Descriptors created before. -->
+        <!-- the path should end with the name without the extension -->
+        <a-nft
+            type="nft"
+            url="./img1"  <!-- Chemin vers vos descripteurs (sans extension) -->
             smooth="true"
             smoothCount="10"
-            smoothTolerance="0.01"
-            smoothThreshold="5">
+            smoothTolerance=".01"
+            smoothThreshold="5"
+        >
+            <!-- Exemple avec un modèle 3D primitif (sphère) -->
+            <!-- Vous pouvez remplacer par un modèle GLTF si vous en avez un -->
+            <a-sphere
+                color="red"
+                radius="0.5"
+                position="0 0.5 0"
+            ></a-sphere>
+            
+            <!-- Exemple avec un cube -->
+            <a-box
+                color="blue"
+                position="1 0.5 0"
+                width="0.5"
+                height="0.5"
+                depth="0.5"
+            ></a-box>
+            
+            <!-- Exemple avec du texte -->
+            <a-text
+                value="AR avec NFT"
+                color="white"
+                position="0 1 0"
+                align="center"
+            ></a-text>
+        </a-nft>
+        
+        <!-- static camera that moves according to the device movements -->
+        <a-entity camera></a-entity>
+    </a-scene>
 
-    <!-- OBJ affiché sur le marqueur -->
-    <a-entity obj-model="obj: #cottageObj; mtl: #cottageMtl"
-          scale="0.09 0.09 0.09"
-          position="0 0 0"
-          rotation="0 0 0"
-</a-entity>
-  </a-marker>
+    <script>
+        // Masquer le loader quand la scène est chargée
+        document.querySelector('a-scene').addEventListener('loaded', function() {
+            setTimeout(function() {
+                document.getElementById('loader').classList.add('hidden');
+                console.log('Scène AR chargée avec succès !');
+            }, 2000); // Délai pour s'assurer que tout est chargé
+        });
 
-  <a-entity camera></a-entity>
-</a-scene>
+        // Gestion des événements de suivi
+        window.addEventListener('markerFound', function(e) {
+            console.log('Marqueur trouvé !');
+            document.getElementById('instructions').textContent = "Image détectée !";
+            document.getElementById('instructions').style.backgroundColor = "rgba(0, 255, 0, 0.7)";
+        });
+
+        window.addEventListener('markerLost', function(e) {
+            console.log('Marqueur perdu');
+            document.getElementById('instructions').textContent = "Pointez votre caméra vers l'image cible";
+            document.getElementById('instructions').style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+        });
+
+        // Instructions pour la permission de la caméra
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    console.log("Accès à la caméra autorisé");
+                })
+                .catch(function(error) {
+                    console.error("Erreur d'accès à la caméra:", error);
+                    document.getElementById('loader').innerHTML = 
+                        '<div><h2>Erreur d\'accès à la caméra</h2>' +
+                        '<p>Veuillez autoriser l\'accès à la caméra et rafraîchir la page.</p></div>';
+                });
+        }
+    </script>
 </body>
 </html>
-
-
-
-
-
